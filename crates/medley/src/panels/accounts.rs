@@ -148,6 +148,7 @@ fn spotify_setup(ui: &mut Ui, state: &mut AppState) {
             s.redirect_port
         ),
     );
+    ui.hyperlink_to("Create your Spotify app", "https://developer.spotify.com/dashboard");
     widgets::hairline(ui);
     row(ui, "Quality", |ui| {
         let mut bitrate: u16 = match s.bitrate {

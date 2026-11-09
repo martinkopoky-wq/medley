@@ -152,6 +152,8 @@ All sign-ins happen in your normal browser and redirect back to a tiny server Me
 
 **Spotify.** Open **Accounts** and choose **Connect**. Medley uses librespot's client ID by default, so there's nothing to register. If you'd rather use your own app, create one at [developer.spotify.com](https://developer.spotify.com/dashboard), add the redirect URI above, and paste its client ID into Accounts. Playback needs Premium; browsing and playlists don't. Streaming quality is 96, 160 or 320 kbps (320 by default).
 
+If connecting returns **429**, Spotify has limited the app's Web API access. With the built-in Client ID, that limit is shared with other users of the same ID. Set your own app's Client ID in Accounts and reconnect to obtain tokens for that app. Respect any reported wait time. `QUOTA_EXCEEDED` means the development app's quota is exhausted; reconnecting does not reset it. Development apps require their owner to have Premium and additional users to be allowlisted in the Spotify dashboard.
+
 **SoundCloud.** Register an app at [soundcloud.com/you/apps](https://soundcloud.com/you/apps), add the redirect URI above, then paste the client ID and client secret into Accounts and connect.
 
 **Apple Music.** Requires an [Apple Developer Program](https://developer.apple.com/programs/) membership. Create a MusicKit key, then either enter your Team ID, Key ID and the path to the `.p8` file (Medley mints and renews the developer token itself) or paste a developer token. **Connect** opens a local page that loads Apple's MusicKit JS; sign in with your Apple ID and the page hands the Music User Token back to Medley.
