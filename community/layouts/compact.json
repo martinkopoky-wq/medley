@@ -1,0 +1,9 @@
+{
+  "format": 1,
+  "name": "Compact",
+  "author": "Medley",
+  "description": "One column of tabs for small windows and tiling window managers.",
+  "root": {
+    "panels": ["collection", "library", "search", "now_playing", "queue", "ai_studio", "accounts", "appearance", "settings"]
+  }
+}

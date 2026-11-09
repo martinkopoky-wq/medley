@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="227 249 570 520" width="142" height="130">
+<title>Medley</title>
+<defs>
+  <mask id="weave0" maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024"><rect width="1024" height="1024" fill="#fff"/><g fill="none" stroke="#000" stroke-width="60" stroke-linecap="round" stroke-linejoin="round"><path d="M316 744 L316 444 C316 394.3 356.3 354 406 354 C460.7 354 494 580 512 622 C530 580 563.3 354 618 354 C667.7 354 708 394.3 708 444 L708 744"/><path d="M252 744 L252 400 C252 330.4 308.4 274 378 274 C454.5 274 494 580 512 622 C530 580 569.5 274 646 274 C715.6 274 772 330.4 772 400 L772 744"/></g></mask>
+  <mask id="weave1" maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024"><rect width="1024" height="1024" fill="#fff"/><g fill="none" stroke="#000" stroke-width="60" stroke-linecap="round" stroke-linejoin="round"><path d="M252 744 L252 400 C252 330.4 308.4 274 378 274 C454.5 274 494 580 512 622 C530 580 569.5 274 646 274 C715.6 274 772 330.4 772 400 L772 744"/></g></mask>
+</defs>
+<g fill="none" stroke="currentColor" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"><path d="M380 744 L380 488 C380 458.2 404.2 434 434 434 C466.8 434 494 580 512 622 C530 580 557.2 434 590 434 C619.8 434 644 458.2 644 488 L644 744" mask="url(#weave0)"/><path d="M316 744 L316 444 C316 394.3 356.3 354 406 354 C460.7 354 494 580 512 622 C530 580 563.3 354 618 354 C667.7 354 708 394.3 708 444 L708 744" mask="url(#weave1)"/><path d="M252 744 L252 400 C252 330.4 308.4 274 378 274 C454.5 274 494 580 512 622 C530 580 569.5 274 646 274 C715.6 274 772 330.4 772 400 L772 744"/></g>
+</svg>

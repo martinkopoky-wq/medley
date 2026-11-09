@@ -1,0 +1,23 @@
+[package]
+name = "medley-audio"
+description = "Low-overhead playback engine for Medley (rodio/symphonia + librespot)"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[features]
+default = ["spotify"]
+spotify = ["dep:librespot-core", "dep:librespot-playback"]
+
+[dependencies]
+medley-core.workspace = true
+anyhow.workspace = true
+futures.workspace = true
+reqwest.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+url.workspace = true
+rodio = { version = "0.21", default-features = false, features = ["playback", "symphonia-mp3", "symphonia-aac", "symphonia-isomp4"] }
+librespot-core = { version = "0.8", optional = true, default-features = false, features = ["rustls-tls-webpki-roots"] }
+librespot-playback = { version = "0.8", optional = true, default-features = false, features = ["rodio-backend", "rustls-tls-webpki-roots"] }

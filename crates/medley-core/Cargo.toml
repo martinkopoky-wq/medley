@@ -1,0 +1,22 @@
+[package]
+name = "medley-core"
+description = "Shared models, provider trait, storage and OAuth helpers for Medley"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+thiserror.workspace = true
+async-trait.workspace = true
+base64.workspace = true
+directories.workspace = true
+open.workspace = true
+rand.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sha2.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+url.workspace = true

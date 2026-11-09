@@ -1,0 +1,24 @@
+{
+  "format": 1,
+  "name": "AI Studio",
+  "author": "Medley",
+  "description": "Describe a vibe on the left, watch the mix appear in the middle.",
+  "accent": "purple",
+  "root": {
+    "split": "horizontal", "fraction": 0.3,
+    "first": {
+      "split": "vertical", "fraction": 0.6,
+      "first": { "panels": ["ai_studio", "search"] },
+      "second": { "panels": ["library"] }
+    },
+    "second": {
+      "split": "horizontal", "fraction": 0.66,
+      "first": { "panels": ["collection", "accounts", "appearance", "settings"] },
+      "second": {
+        "split": "vertical", "fraction": 0.5,
+        "first": { "panels": ["now_playing"] },
+        "second": { "panels": ["queue"] }
+      }
+    }
+  }
+}

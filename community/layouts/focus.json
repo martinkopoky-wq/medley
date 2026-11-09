@@ -1,0 +1,16 @@
+{
+  "format": 1,
+  "name": "Focus",
+  "author": "Medley",
+  "description": "Big artwork front and center. Everything else waits in a slim column.",
+  "theme": "dark",
+  "root": {
+    "split": "horizontal", "fraction": 0.62,
+    "first": { "panels": ["now_playing"] },
+    "second": {
+      "split": "vertical", "fraction": 0.45,
+      "first": { "panels": ["queue"] },
+      "second": { "panels": ["collection", "library", "search", "ai_studio", "accounts", "appearance", "settings"] }
+    }
+  }
+}

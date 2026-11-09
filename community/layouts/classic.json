@@ -1,0 +1,19 @@
+{
+  "format": 1,
+  "name": "Classic",
+  "author": "Medley",
+  "description": "Library on the left, your music in the middle, what's playing and what's next on the right.",
+  "root": {
+    "split": "horizontal", "fraction": 0.2,
+    "first": { "panels": ["library"] },
+    "second": {
+      "split": "horizontal", "fraction": 0.7,
+      "first": { "panels": ["collection", "search", "ai_studio", "accounts", "appearance", "settings"] },
+      "second": {
+        "split": "vertical", "fraction": 0.56,
+        "first": { "panels": ["now_playing"] },
+        "second": { "panels": ["queue"] }
+      }
+    }
+  }
+}

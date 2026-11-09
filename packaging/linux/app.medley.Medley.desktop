@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Medley
+GenericName=Music Player
+Comment=One fast, native library for Spotify, SoundCloud and Apple Music
+Exec=medley
+Icon=app.medley.Medley
+Terminal=false
+Categories=Audio;Music;Player;AudioVideo;
+Keywords=music;spotify;soundcloud;apple music;playlist;player;
+StartupWMClass=app.medley.Medley
+SingleMainWindow=true

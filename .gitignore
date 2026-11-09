@@ -1,0 +1,20 @@
+# Build output
+/target
+
+# Atomic-write temp files (store.rs writes `<name>.tmp-<hex>` then renames)
+*.tmp-*
+
+# Local tooling
+.claude/settings.local.json
+.venv/
+__pycache__/
+*.py[cod]
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.idea/
+.vscode/
+*.code-workspace

@@ -1,0 +1,17 @@
+[package]
+name = "medley-ai"
+description = "AI features for Medley: vibe playlists, queue continuation, liner notes, layouts"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+medley-core.workspace = true
+anyhow.workspace = true
+futures.workspace = true
+reqwest.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tokio.workspace = true
+tracing.workspace = true
