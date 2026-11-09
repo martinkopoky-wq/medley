@@ -18,7 +18,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: ubuntu-latest
+          - os: ubuntu-22.04
             target: x86_64-unknown-linux-gnu
             archive: tar.gz
           - os: macos-latest
@@ -43,10 +43,33 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
-            pkg-config libasound2-dev libwayland-dev libxkbcommon-dev libgl1-mesa-dev
+            pkg-config libasound2-dev libwayland-dev libxkbcommon-dev libgl1-mesa-dev \
+            desktop-file-utils xvfb xauth
+
+      - name: Test (Linux)
+        if: runner.os == 'Linux'
+        run: cargo test --workspace --locked
 
       - name: Build
         run: cargo build --release --locked -p medley --target ${{ matrix.target }}
+
+      - name: Package AppImage (Linux)
+        if: runner.os == 'Linux'
+        run: bash packaging/linux/appimage.sh "target/${{ matrix.target }}/release/medley" "$GITHUB_REF_NAME"
+
+      - name: Smoke test AppImage (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          cd dist
+          sha256sum --check ./*.AppImage.sha256
+          image=$(realpath ./*.AppImage)
+          mkdir smoke
+          cd smoke
+          "$image" --appimage-extract > /dev/null
+          desktop-file-validate squashfs-root/app.medley.Medley.desktop
+          env MEDLEY_DEMO=1 MEDLEY_SCREENSHOT="$PWD/smoke.png" LIBGL_ALWAYS_SOFTWARE=1 \
+            timeout 60s xvfb-run -a ./squashfs-root/AppRun
+          test -s smoke.png
 
       - name: Package (Unix)
         if: matrix.archive == 'tar.gz'
@@ -76,6 +99,15 @@ jobs:
         with:
           name: medley-${{ matrix.target }}
           path: dist/*.${{ matrix.archive }}
+
+      - uses: actions/upload-artifact@v4
+        if: runner.os == 'Linux'
+        with:
+          name: medley-AppImage-x86_64
+          path: |
+            dist/*.AppImage
+            dist/*.AppImage.sha256
+          if-no-files-found: error
 
   release:
     name: publish

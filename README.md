@@ -84,7 +84,16 @@ Medley talks to each service through its official API, with your own account. So
 
 ## Install
 
-There are no packaged releases yet. Building takes a few minutes.
+Download the Linux x86_64 AppImage from [Releases](https://github.com/martinkopoky-wq/medley/releases/latest), make it executable, and open it:
+
+```sh
+chmod +x Medley-*.AppImage
+./Medley-*.AppImage
+```
+
+If your system cannot mount AppImages with FUSE, run `./Medley-*.AppImage --appimage-extract-and-run` instead. Spotify playback is included. Release archives are also available for Linux, macOS and Windows.
+
+To build from source, follow the steps below. Building takes a few minutes.
 
 ### Requirements
 
@@ -121,6 +130,15 @@ install -Dm644 assets/icon-256.png ~/.local/share/icons/hicolor/256x256/apps/app
 ```
 
 To build without Spotify playback (and without librespot), use `cargo build --release --no-default-features`.
+
+To package your Linux x86_64 build as an AppImage:
+
+```sh
+cargo build --release --locked
+bash packaging/linux/appimage.sh
+```
+
+The AppImage and its SHA-256 checksum appear in `dist/`. The script downloads checksum-verified packaging tools into `target/appimage/`. Official AppImages are built on Ubuntu 22.04 and require glibc 2.35 or newer plus a working Linux desktop. The tag-triggered release workflow builds, tests and publishes the AppImage automatically.
 
 ## Connecting your services
 

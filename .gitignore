@@ -1,5 +1,6 @@
 # Build output
 /target
+/dist
 
 # Atomic-write temp files (store.rs writes `<name>.tmp-<hex>` then renames)
 *.tmp-*
