@@ -102,7 +102,7 @@ To build from source, follow the steps below. Building takes a few minutes.
 
 ```sh
 # Debian / Ubuntu
-sudo apt install build-essential pkg-config libasound2-dev libwayland-dev libxkbcommon-dev libgl1-mesa-dev
+sudo apt install build-essential pkg-config libasound2-dev libwayland-dev libxkbcommon-dev libxkbcommon-x11-0 libgl1-mesa-dev
 
 # Fedora
 sudo dnf install gcc pkgconf-pkg-config alsa-lib-devel wayland-devel libxkbcommon-devel mesa-libGL-devel
@@ -138,7 +138,7 @@ cargo build --release --locked
 bash packaging/linux/appimage.sh
 ```
 
-The AppImage and its SHA-256 checksum appear in `dist/`. The script downloads checksum-verified packaging tools into `target/appimage/`. Official AppImages are built on Ubuntu 22.04 and require glibc 2.35 or newer plus a working Linux desktop. The tag-triggered release workflow builds, tests and publishes the AppImage automatically.
+The AppImage and its SHA-256 checksum appear in `dist/`. Packaging also needs the X11 keyboard libraries (`libxkbcommon-x11-0` on Debian/Ubuntu); the script bundles them because they are loaded dynamically. The script downloads checksum-verified packaging tools into `target/appimage/`. Official AppImages are built on Ubuntu 22.04 and require glibc 2.35 or newer plus a working Linux desktop. The tag-triggered release workflow builds, tests and publishes the AppImage automatically.
 
 ## Connecting your services
 

@@ -16,6 +16,17 @@ work=$(mktemp -d "$repo/target/appimage/build.XXXXXX")
 appdir="$work/Medley.AppDir"
 tools="$repo/target/appimage/tools"
 
+# winit loads these through dlopen; ldd cannot discover them for linuxdeploy.
+libraries=()
+for name in libxkbcommon.so.0 libxkbcommon-x11.so.0 libxcb-xkb.so.1; do
+    library=$(ldconfig -p | awk -v name="$name" '$1 == name && /x86-64/ && !found { print $NF; found=1 }')
+    if [[ ! -f "$library" ]]; then
+        echo "Missing $name: install libxkbcommon-x11-0 (Debian/Ubuntu) before packaging." >&2
+        exit 1
+    fi
+    libraries+=(--library "$library")
+done
+
 # Fixed upstream releases and SHA-256 hashes keep packaging inputs reproducible.
 download() {
     local name=$1 url=$2 checksum=$3
@@ -45,6 +56,7 @@ mkdir "$work/linuxdeploy" "$work/appimagetool"
 "$work/linuxdeploy/squashfs-root/AppRun" \
     --appdir "$appdir" \
     --executable "$binary" \
+    "${libraries[@]}" \
     --desktop-file "$repo/packaging/linux/app.medley.Medley.desktop" \
     --icon-file "$repo/assets/icon-256.png" --icon-filename app.medley.Medley
 
