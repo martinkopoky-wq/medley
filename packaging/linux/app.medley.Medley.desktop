@@ -9,4 +9,3 @@ Terminal=false
 Categories=Audio;Music;Player;AudioVideo;
 Keywords=music;spotify;soundcloud;apple music;playlist;player;
 StartupWMClass=app.medley.Medley
-SingleMainWindow=true
