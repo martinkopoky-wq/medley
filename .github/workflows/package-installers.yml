@@ -1,0 +1,139 @@
+name: Package installers
+
+# Builds .deb, Windows Setup.exe and macOS .dmg from the release assets that
+# the Release workflow already verified, without rebuilding any Rust code.
+# Runs automatically after every published release, and on demand for one tag.
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing release tag to package for (for example v0.1.5)
+        required: true
+        type: string
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+env:
+  RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
+
+jobs:
+  linux-deb:
+    name: Linux .deb
+    runs-on: ubuntu-22.04
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download and verify the release AppImage
+        run: |
+          mkdir -p dist
+          gh release download "$RELEASE_TAG" --pattern 'Medley-*.AppImage' --pattern 'Medley-*.AppImage.sha256' --dir dist
+          python3 packaging/verify-downloads.py "$RELEASE_TAG" dist
+
+      - name: Build .deb from the AppImage payload
+        run: bash packaging/linux/deb.sh "$(realpath dist/Medley-*.AppImage)" "$RELEASE_TAG"
+
+      - name: Install the .deb and validate the result
+        run: |
+          set -eu
+          version=${RELEASE_TAG#v}
+          sudo apt-get update
+          sudo apt-get install -y desktop-file-utils
+          sudo apt-get install -y "./dist/medley_${version}_amd64.deb"
+          desktop-file-validate /usr/share/applications/app.medley.Medley.desktop
+          env MEDLEY_DEMO=1 MEDLEY_SCREENSHOT="$PWD/install-launch.png" \
+            timeout 60s xvfb-run -a /usr/bin/medley
+          test -s install-launch.png
+
+      - name: Checksum and upload
+        run: |
+          set -eu
+          version=${RELEASE_TAG#v}
+          cd dist
+          sha256sum "medley_${version}_amd64.deb" > "medley_${version}_amd64.deb.sha256"
+          cd ..
+          gh release upload "$RELEASE_TAG" dist/*.deb dist/*.deb.sha256 --clobber
+
+  windows-installers:
+    name: Windows Setup.exe
+    runs-on: windows-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download and verify the release ZIP
+        shell: bash
+        run: |
+          mkdir -p dist
+          gh release download "$RELEASE_TAG" --pattern 'medley-*-x86_64-pc-windows-msvc.zip' --dir dist
+          python packaging/verify-downloads.py "$RELEASE_TAG" dist
+
+      - name: Extract the verified executable
+        shell: bash
+        run: |
+          version=${RELEASE_TAG#v}
+          mkdir -p target/installers/windows-zip
+          unzip -q "dist/medley-v${version}-x86_64-pc-windows-msvc.zip" -d target/installers/windows-zip
+          test -f "target/installers/windows-zip/medley-v${version}-x86_64-pc-windows-msvc/medley.exe"
+
+      - name: Build Setup.exe and portable exe
+        shell: pwsh
+        run: |
+          $version = "${env:RELEASE_TAG}".TrimStart('v')
+          $binary = "target/installers/windows-zip/medley-v${version}-x86_64-pc-windows-msvc/medley.exe"
+          ./packaging/windows/package.ps1 -Binary $binary -Version $version
+          test -Path "dist/Medley-$version-x64-Setup.exe"
+          test -Path "dist/Medley-$version-x64.exe"
+
+      - name: Checksum and upload
+        shell: pwsh
+        run: |
+          $version = "${env:RELEASE_TAG}".TrimStart('v')
+          foreach ($name in @("Medley-$version-x64-Setup.exe", "Medley-$version-x64.exe")) {
+            $hash = (Get-FileHash -Algorithm SHA256 "dist/$name").Hash.ToLower()
+            Set-Content -NoNewline -Path "dist/$name.sha256" -Value "$hash  $name`n"
+          }
+          gh release upload "$env:RELEASE_TAG" dist/Medley-$version-x64-Setup.exe dist/Medley-$version-x64-Setup.exe.sha256 dist/Medley-$version-x64.exe dist/Medley-$version-x64.exe.sha256 --clobber
+
+  macos-app:
+    name: macOS .dmg
+    runs-on: macos-14
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download and verify the release archive
+        run: |
+          mkdir -p dist
+          gh release download "$RELEASE_TAG" --pattern 'medley-*-aarch64-apple-darwin.tar.gz' --dir dist
+          python3 packaging/verify-downloads.py "$RELEASE_TAG" dist
+
+      - name: Extract the verified binary
+        run: |
+          version=${RELEASE_TAG#v}
+          mkdir -p target/installers/mac-zip
+          tar -xzf "dist/medley-v${version}-aarch64-apple-darwin.tar.gz" -C target/installers/mac-zip
+          test -x "target/installers/mac-zip/medley-v${version}-aarch64-apple-darwin/medley"
+
+      - name: Build .app, .dmg and app.zip
+        run: bash packaging/macos/package.sh "target/installers/mac-zip/medley-v${RELEASE_TAG#v}-aarch64-apple-darwin/medley" "$RELEASE_TAG"
+
+      - name: Checksum and upload
+        run: |
+          set -eu
+          version=${RELEASE_TAG#v}
+          cd dist
+          for name in "Medley-$version-arm64.dmg" "Medley-$version-arm64.app.zip"; do
+            shasum -a 256 "$name" > "$name.sha256"
+          done
+          cd ..
+          gh release upload "$RELEASE_TAG" \
+            dist/Medley-${version}-arm64.dmg dist/Medley-${version}-arm64.dmg.sha256 \
+            dist/Medley-${version}-arm64.app.zip dist/Medley-${version}-arm64.app.zip.sha256 --clobber

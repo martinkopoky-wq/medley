@@ -14,11 +14,13 @@ Wähle nur den Abschnitt für dein Betriebssystem. Die Befehle installieren im e
 
 Linux-Desktop mit glibc ≥ 2.35 (z. B. Ubuntu 22.04+), curl und sha256sum. FUSE oder der alternative Startbefehl unten.
 
-Installationspfad: `~/.local/bin/medley`.
+Installationspfad: `~/.local/bin/medley` (AppImage) oder `/opt/medley` mit Startbefehl `medley` (.deb).
 
-[Direkter Download](https://github.com/martinkopoky-wq/medley/releases/download/v0.1.5/Medley-0.1.5-x86_64.AppImage)
+- [AppImage](https://github.com/martinkopoky-wq/medley/releases/download/v0.1.5/Medley-0.1.5-x86_64.AppImage) · [Prüfsumme](https://github.com/martinkopoky-wq/medley/releases/download/v0.1.5/Medley-0.1.5-x86_64.AppImage.sha256)
+- [.deb für Debian / Ubuntu](https://github.com/martinkopoky-wq/medley/releases/download/v0.1.5/medley_0.1.5_amd64.deb) · [Prüfsumme](https://github.com/martinkopoky-wq/medley/releases/download/v0.1.5/medley_0.1.5_amd64.deb.sha256)
+- [tar.gz](https://github.com/martinkopoky-wq/medley/releases/download/v0.1.5/medley-v0.1.5-x86_64-unknown-linux-gnu.tar.gz)
 
-**Bash / Zsh**
+**Bash / Zsh · AppImage**
 
 ```sh
 (
@@ -43,75 +45,96 @@ Installationspfad: `~/.local/bin/medley`.
 "$HOME/.local/bin/medley" --appimage-extract-and-run
 ```
 
-- Starten mit ~/.local/bin/medley. Liegt ~/.local/bin in deinem PATH, reicht medley.
-- Die Prüfsumme wird vor der Installation kontrolliert. Bei einem Download- oder Prüffehler bricht der Befehl ab.
-- Das AppImage enthält Spotify-Wiedergabe. Eine Linux-ARM-Version wird aktuell nicht als fertiger Download gebaut.
-
-### macOS · Apple Silicon · arm64
-
-Mac mit Apple Silicon, curl und tar. Für Intel-Macs bitte aus dem Quellcode bauen.
-
-Installationspfad: `~/Applications/Medley/medley`.
-
-[Direkter Download](https://github.com/martinkopoky-wq/medley/releases/download/v0.1.5/medley-v0.1.5-aarch64-apple-darwin.tar.gz)
-
-**Bash / Zsh**
+**Bash / Zsh · .deb (Debian / Ubuntu)**
 
 ```sh
 (
   set -eu
   version='0.1.5'
   base='https://github.com/martinkopoky-wq/medley/releases/download'
-  file="medley-v$version-aarch64-apple-darwin.tar.gz"
+  file="medley_${version}_amd64.deb"
   workdir="$(mktemp -d)"
   trap 'rm -rf "$workdir"' EXIT
   curl -fL --retry 3 "$base/v$version/$file" -o "$workdir/$file"
-  mkdir -p "$HOME/Applications/Medley"
-  tar -xzf "$workdir/$file" --strip-components=1 -C "$HOME/Applications/Medley"
-  chmod +x "$HOME/Applications/Medley/medley"
-  printf '\nInstalliert: %s\nStarten: "%s"\n' "$HOME/Applications/Medley/medley" "$HOME/Applications/Medley/medley"
+  curl -fL --retry 3 "$base/v$version/$file.sha256" -o "$workdir/$file.sha256"
+  ( cd "$workdir" && sha256sum --check "$file.sha256" )
+  sudo apt install -y "$workdir/$file"
 )
 ```
 
-- Starten im Terminal mit "$HOME/Applications/Medley/medley".
-- Das Release ist eine native Programmdatei im tar.gz-Archiv; es ist kein signiertes oder notarisiertes .app-Paket.
-- macOS kann beim ersten Öffnen eine Freigabe in Systemeinstellungen → Datenschutz & Sicherheit verlangen. Die Systemsicherheit muss dafür nicht deaktiviert werden.
-- Für dieses Archiv veröffentlicht der Release-Workflow derzeit keine separate Prüfsumme.
+Das .deb enthält denselben gepackten Programmordner wie das AppImage (inklusive der passenden XKB-Bibliotheken), dazu Menüeintrag und Icon. Entfernen mit `sudo apt remove medley`; eigene Einstellungen bleiben erhalten.
+
+- Starten mit ~/.local/bin/medley. Liegt ~/.local/bin in deinem PATH, reicht medley.
+- Die Prüfsumme wird vor der Installation kontrolliert. Bei einem Download- oder Prüffehler bricht der Befehl ab.
+- Das AppImage enthält Spotify-Wiedergabe. Eine Linux-ARM-Version wird aktuell nicht als fertiger Download gebaut.
+
+### macOS · Apple Silicon · arm64
+
+Mac mit Apple Silicon, macOS 11 oder neuer, curl und shasum. Für Intel-Macs bitte aus dem Quellcode bauen.
+
+Installationspfad: `~/Applications/Medley.app`.
+
+- [.dmg](https://github.com/martinkopoky-wq/medley/releases/download/v0.1.5/Medley-0.1.5-arm64.dmg) · [Prüfsumme](https://github.com/martinkopoky-wq/medley/releases/download/v0.1.5/Medley-0.1.5-arm64.dmg.sha256)
+- [Medley.app als ZIP](https://github.com/martinkopoky-wq/medley/releases/download/v0.1.5/Medley-0.1.5-arm64.app.zip) · [Prüfsumme](https://github.com/martinkopoky-wq/medley/releases/download/v0.1.5/Medley-0.1.5-arm64.app.zip.sha256)
+- [tar.gz · nackte Programmdatei](https://github.com/martinkopoky-wq/medley/releases/download/v0.1.5/medley-v0.1.5-aarch64-apple-darwin.tar.gz)
+
+**Bash / Zsh · DMG**
+
+```sh
+(
+  set -eu
+  version='0.1.5'
+  base='https://github.com/martinkopoky-wq/medley/releases/download'
+  file="Medley-$version-arm64.dmg"
+  workdir="$(mktemp -d)"
+  trap 'rm -rf "$workdir"' EXIT
+  curl -fL --retry 3 "$base/v$version/$file" -o "$workdir/$file"
+  curl -fL --retry 3 "$base/v$version/$file.sha256" -o "$workdir/$file.sha256"
+  ( cd "$workdir" && shasum -a 256 --check "$file.sha256" )
+  hdiutil attach -nobrowse -quiet "$workdir/$file"
+  ditto "/Volumes/Medley/Medley.app" "$HOME/Applications/Medley.app"
+  hdiutil detach -quiet "/Volumes/Medley"
+  printf '\nInstalliert: %s\n' "$HOME/Applications/Medley.app"
+)
+```
+
+Die .app ist ad-hoc signiert, aber nicht von Apple notariell geprüft. macOS fragt deshalb beim ersten Start; bestätige mit „Öffnen“ (Rechtsklick → Öffnen geht auch). Für Intel-Macs gibt es noch keinen fertigen Download. Das alte tar.gz bleibt für Skripte verfügbar; dafür veröffentlicht der Workflow keine separate Prüfsumme.
 
 ### Windows · Intel / AMD · x64
 
-Windows x64 mit PowerShell 5.1 oder neuer. Installation im eigenen Benutzerkonto, ohne Administratorrechte.
+Windows 10 oder 11, x64, PowerShell 5.1 oder neuer. Installation im eigenen Benutzerkonto, ohne Administratorrechte.
 
 Installationspfad: `%LOCALAPPDATA%\Programs\Medley\medley.exe`.
 
-[Direkter Download](https://github.com/martinkopoky-wq/medley/releases/download/v0.1.5/medley-v0.1.5-x86_64-pc-windows-msvc.zip)
+- [Setup.exe](https://github.com/martinkopoky-wq/medley/releases/download/v0.1.5/Medley-0.1.5-x64-Setup.exe) · [Prüfsumme](https://github.com/martinkopoky-wq/medley/releases/download/v0.1.5/Medley-0.1.5-x64-Setup.exe.sha256)
+- [Medley.exe · portabel](https://github.com/martinkopoky-wq/medley/releases/download/v0.1.5/Medley-0.1.5-x64.exe) · [Prüfsumme](https://github.com/martinkopoky-wq/medley/releases/download/v0.1.5/Medley-0.1.5-x64.exe.sha256)
+- [ZIP](https://github.com/martinkopoky-wq/medley/releases/download/v0.1.5/medley-v0.1.5-x86_64-pc-windows-msvc.zip)
 
-**PowerShell**
+**PowerShell · Setup.exe**
 
 ```powershell
 $ErrorActionPreference = 'Stop'
 $version = '0.1.5'
 $base = 'https://github.com/martinkopoky-wq/medley/releases/download'
-$name = "medley-v$version-x86_64-pc-windows-msvc"
+$name = "Medley-$version-x64-Setup.exe"
 $workdir = Join-Path ([System.IO.Path]::GetTempPath()) ([guid]::NewGuid().ToString())
-$destination = Join-Path $env:LOCALAPPDATA 'Programs\Medley'
 try {
-  New-Item -ItemType Directory -Force -Path $workdir, $destination | Out-Null
-  $archive = Join-Path $workdir "$name.zip"
-  Invoke-WebRequest -UseBasicParsing -Uri "$base/v$version/$name.zip" -OutFile $archive
-  Expand-Archive -LiteralPath $archive -DestinationPath $workdir -Force
-  Copy-Item -Path (Join-Path $workdir "$name\*") -Destination $destination -Recurse -Force
-  Write-Host "Installiert: $(Join-Path $destination 'medley.exe')"
+  New-Item -ItemType Directory -Force -Path $workdir | Out-Null
+  $installer = Join-Path $workdir $name
+  Invoke-WebRequest -UseBasicParsing -Uri "$base/v$version/$name" -OutFile $installer
+  $hash = (Get-FileHash -Algorithm SHA256 $installer).Hash.ToLower()
+  $expected = (Invoke-WebRequest -UseBasicParsing "$base/v$version/$name.sha256").Content.Split(' ')[0]
+  if ($hash -ne $expected) { throw 'Prüfsumme stimmt nicht.' }
+  Start-Process -FilePath $installer -ArgumentList '/S' -Wait
+  Write-Host "Installiert: $(Join-Path $env:LOCALAPPDATA 'Programs\Medley\medley.exe')"
 } finally {
   if (Test-Path -LiteralPath $workdir) { Remove-Item -LiteralPath $workdir -Recurse -Force }
 }
 # Medley starten:
-& (Join-Path $destination 'medley.exe')
+& (Join-Path $env:LOCALAPPDATA 'Programs\Medley\medley.exe')
 ```
 
-- Später per Doppelklick auf medley.exe im Installationsordner starten.
-- Der Befehl entpackt das ZIP und kopiert den Inhalt des Versionsordners an den endgültigen Ort.
-- Das Release ist ein portables Programm, kein MSI-Installer. Für das ZIP gibt es derzeit keine separate Release-Prüfsumme.
+Der Installer trägt Medley ins Startmenü ein, legt die Microsoft-Visual-C++-Laufzeit direkt neben dem Programm ab und lässt sich über „Apps & Features“ wieder entfernen; eigene Einstellungen bleiben erhalten. Ohne Installer funktioniert die portable Medley.exe, wenn die Visual-C++-Laufzeit im System vorhanden ist. Das ZIP bleibt für Skripte verfügbar; dafür veröffentlicht der Workflow keine separate Prüfsumme.
 
 ### Quellcode · Linux · macOS · Windows
 
@@ -234,4 +257,4 @@ cd "$HOME/src/medley-website/website"
 npm run start
 ```
 
-Die Website benötigt keine Spotify-, SoundCloud- oder Apple-Music-Zugangsdaten. Für ihre Installationstexte ist `website/lib/install-data.ts` die zentrale Quelle. Die Archive und ihre internen Versionsordner folgen `.github/workflows/release.yml`; der AppImage-Dateiname und die Prüfsumme folgen `packaging/linux/appimage.sh`. Es gibt derzeit keine offiziellen Homebrew-, Winget- oder APT-Installationspakete.
+Die Website benötigt keine Spotify-, SoundCloud- oder Apple-Music-Zugangsdaten. Für ihre Installationstexte ist `website/lib/install-data.ts` die zentrale Quelle. Die Archive und ihre internen Versionsordner folgen `.github/workflows/release.yml`; der AppImage-Dateiname und die Prüfsumme folgen `packaging/linux/appimage.sh`; .deb, Setup.exe, portables .exe, .dmg und App-ZIP folgen `.github/workflows/package-installers.yml` mit den Skripten unter `packaging/`. Es gibt derzeit keine offiziellen Homebrew-, Winget- oder APT-Installationspakete.

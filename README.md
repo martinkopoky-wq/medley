@@ -91,7 +91,7 @@ chmod +x Medley-*.AppImage
 ./Medley-*.AppImage
 ```
 
-If your system cannot mount AppImages with FUSE, run `./Medley-*.AppImage --appimage-extract-and-run` instead. Spotify playback is included. Release archives are also available for Linux, macOS and Windows.
+If your system cannot mount AppImages with FUSE, run `./Medley-*.AppImage --appimage-extract-and-run` instead. Spotify playback is included. Releases also carry a Debian `.deb` (`sudo apt install ./medley_*_amd64.deb`), a per-user Windows `Setup.exe` with Start menu entry and uninstaller, a portable `Medley.exe`, an Apple Silicon `.dmg` and a `Medley.app` ZIP, each with a SHA-256 sidecar where the platform scripts check one. The macOS app is ad-hoc signed but not notarized, so macOS asks once at first launch.
 
 To build from source, follow the steps below. Building takes a few minutes.
 
@@ -139,6 +139,8 @@ bash packaging/linux/appimage.sh
 ```
 
 The AppImage and its SHA-256 checksum appear in `dist/`. Packaging needs Meson, Ninja, Bison and xcb-xkb development headers (`sudo apt install meson ninja-build bison libxcb-xkb-dev` on Debian/Ubuntu). The script builds and bundles a matched libxkbcommon 1.11.0 core/X11 pair from a checksum-pinned source archive, because the libraries share private symbols and must not be mixed across versions. The script downloads checksum-verified packaging tools into `target/appimage/`. Official AppImages are built on Ubuntu 22.04 and require glibc 2.35 or newer plus a working Linux desktop. The tag-triggered release workflow builds, tests and publishes the AppImage automatically.
+
+To turn a published release's verified binaries into the install formats, run the [`Package installers`](.github/workflows/package-installers.yml) workflow (on demand for one tag, or automatically after every release). It never rebuilds Rust code: `packaging/linux/deb.sh` reuses the AppImage payload for the `.deb`, `packaging/windows/package.ps1` adds Microsoft's app-local CRT and builds the NSIS `Setup.exe`, and `packaging/macos/package.sh` wraps the binary into `Medley.app`, a `.dmg` and an app ZIP. Every job downloads its input only after `packaging/verify-downloads.py` has checked it against GitHub's release digests.
 
 ## Product website
 

@@ -1,16 +1,22 @@
-/** Release names follow .github/workflows/release.yml and packaging/linux/appimage.sh. */
+/** Release names follow .github/workflows/release.yml, package-installers.yml and packaging/. */
 export const RELEASE_VERSION = '0.1.5';
 export const REPOSITORY = 'https://github.com/martinkopoky-wq/medley';
 export const RELEASE_URL = `${REPOSITORY}/releases/tag/v${RELEASE_VERSION}`;
 const downloadBase = `${REPOSITORY}/releases/download/v${RELEASE_VERSION}`;
 
 export type InstallPlatform = 'linux' | 'macos' | 'windows' | 'source';
+export interface InstallFormat {
+  label: string;
+  note: string;
+  url: string;
+}
 export interface InstallOption {
   id: InstallPlatform;
   label: string;
   architecture: string;
   requirements: string;
   downloadUrl: string;
+  formats: readonly InstallFormat[];
   command: string;
   installPath: string;
   shell: 'Bash / Zsh' | 'PowerShell';
@@ -27,6 +33,11 @@ export const INSTALL_OPTIONS: readonly InstallOption[] = [
     architecture: 'Intel / AMD · x86_64',
     requirements: 'Linux-Desktop mit glibc ≥ 2.35 (z. B. Ubuntu 22.04+), curl und sha256sum. FUSE oder der alternative Startbefehl unten.',
     downloadUrl: `${downloadBase}/Medley-${RELEASE_VERSION}-x86_64.AppImage`,
+    formats: [
+      { label: 'AppImage', note: 'Einzelne Datei, startet ohne Installation', url: `${downloadBase}/Medley-${RELEASE_VERSION}-x86_64.AppImage` },
+      { label: '.deb · Debian / Ubuntu', note: 'Mit Menüeintrag und Entfernungsanleitung', url: `${downloadBase}/medley_${RELEASE_VERSION}_amd64.deb` },
+      { label: 'tar.gz', note: 'Programmdatei und Daten zum Selbsteinrichten', url: `${downloadBase}/medley-v${RELEASE_VERSION}-x86_64-unknown-linux-gnu.tar.gz` },
+    ],
     shell: 'Bash / Zsh',
     installPath: '~/.local/bin/medley',
     command: `(
@@ -55,60 +66,74 @@ export const INSTALL_OPTIONS: readonly InstallOption[] = [
     id: 'macos',
     label: 'macOS',
     architecture: 'Apple Silicon · arm64',
-    requirements: 'Mac mit Apple Silicon, curl und tar. Für Intel-Macs bitte aus dem Quellcode bauen.',
-    downloadUrl: `${downloadBase}/medley-v${RELEASE_VERSION}-aarch64-apple-darwin.tar.gz`,
+    requirements: 'Mac mit Apple Silicon, macOS 11 oder neuer, curl und shasum. Für Intel-Macs bitte aus dem Quellcode bauen.',
+    downloadUrl: `${downloadBase}/Medley-${RELEASE_VERSION}-arm64.dmg`,
+    formats: [
+      { label: '.dmg', note: 'Festplatte einlegen, Medley.app in Programme ziehen', url: `${downloadBase}/Medley-${RELEASE_VERSION}-arm64.dmg` },
+      { label: 'Medley.app als ZIP', note: 'Dieselbe App ohne DMG-Hülle', url: `${downloadBase}/Medley-${RELEASE_VERSION}-arm64.app.zip` },
+      { label: 'tar.gz', note: 'Nackte Programmdatei für Skripte', url: `${downloadBase}/medley-v${RELEASE_VERSION}-aarch64-apple-darwin.tar.gz` },
+    ],
     shell: 'Bash / Zsh',
-    installPath: '~/Applications/Medley/medley',
+    installPath: '~/Applications/Medley.app',
     command: `(
   set -eu
   version='${RELEASE_VERSION}'
   base='${REPOSITORY}/releases/download'
-  file="medley-v$version-aarch64-apple-darwin.tar.gz"
+  file="Medley-$version-arm64.dmg"
   workdir="$(mktemp -d)"
   trap 'rm -rf "$workdir"' EXIT
   curl -fL --retry 3 "$base/v$version/$file" -o "$workdir/$file"
-  mkdir -p "$HOME/Applications/Medley"
-  tar -xzf "$workdir/$file" --strip-components=1 -C "$HOME/Applications/Medley"
-  chmod +x "$HOME/Applications/Medley/medley"
-  printf '\\nInstalliert: %s\\nStarten: "%s"\\n' "$HOME/Applications/Medley/medley" "$HOME/Applications/Medley/medley"
+  curl -fL --retry 3 "$base/v$version/$file.sha256" -o "$workdir/$file.sha256"
+  ( cd "$workdir" && shasum -a 256 --check "$file.sha256" )
+  hdiutil attach -nobrowse -quiet "$workdir/$file"
+  ditto "/Volumes/Medley/Medley.app" "$HOME/Applications/Medley.app"
+  hdiutil detach -quiet "/Volumes/Medley"
+  printf '\\nInstalliert: %s\\n' "$HOME/Applications/Medley.app"
 )`,
     notes: [
-      'Starten im Terminal mit "$HOME/Applications/Medley/medley".',
-      'Das Release ist eine native Programmdatei im tar.gz-Archiv; es ist kein signiertes oder notarisiertes .app-Paket.',
-      'macOS kann beim ersten Öffnen eine Freigabe in Systemeinstellungen → Datenschutz & Sicherheit verlangen. Die Systemsicherheit muss dafür nicht deaktiviert werden.',
-      'Für dieses Archiv veröffentlicht der Release-Workflow derzeit keine separate Prüfsumme.',
+      'Die App liegt danach in ~/Applications und startet über Launchpad oder Spotlight.',
+      'Das DMG ist ad-hoc signiert, aber nicht von Apple notariell geprüft. macOS fragt deshalb beim ersten Start; bestätige mit „Öffnen“ (Rechtsklick → Öffnen geht auch).',
+      'Der Befehl prüft die SHA-256-Prüfsumme des DMG, bevor er es einhängt.',
+      'Für Intel-Macs gibt es noch keinen fertigen Download; dort aktuell aus dem Quellcode bauen.',
     ],
   },
   {
     id: 'windows',
     label: 'Windows',
     architecture: 'Intel / AMD · x64',
-    requirements: 'Windows x64 mit PowerShell 5.1 oder neuer. Installation im eigenen Benutzerkonto, ohne Administratorrechte.',
-    downloadUrl: `${downloadBase}/medley-v${RELEASE_VERSION}-x86_64-pc-windows-msvc.zip`,
+    requirements: 'Windows 10 oder 11, x64, PowerShell 5.1 oder neuer. Installation im eigenen Benutzerkonto, ohne Administratorrechte.',
+    downloadUrl: `${downloadBase}/Medley-${RELEASE_VERSION}-x64-Setup.exe`,
+    formats: [
+      { label: 'Setup.exe', note: 'Installer mit Startmenü-Eintrag und Deinstallation', url: `${downloadBase}/Medley-${RELEASE_VERSION}-x64-Setup.exe` },
+      { label: 'Medley.exe · portabel', note: 'Einzelne Datei, braucht die Visual-C++-Laufzeit im System', url: `${downloadBase}/Medley-${RELEASE_VERSION}-x64.exe` },
+      { label: 'ZIP', note: 'Alle Dateien entpackt zum Selbsteinrichten', url: `${downloadBase}/medley-v${RELEASE_VERSION}-x86_64-pc-windows-msvc.zip` },
+    ],
     shell: 'PowerShell',
     installPath: '%LOCALAPPDATA%\\Programs\\Medley\\medley.exe',
     command: `$ErrorActionPreference = 'Stop'
 $version = '${RELEASE_VERSION}'
 $base = '${REPOSITORY}/releases/download'
-$name = "medley-v$version-x86_64-pc-windows-msvc"
+$name = "Medley-$version-x64-Setup.exe"
 $workdir = Join-Path ([System.IO.Path]::GetTempPath()) ([guid]::NewGuid().ToString())
-$destination = Join-Path $env:LOCALAPPDATA 'Programs\\Medley'
 try {
-  New-Item -ItemType Directory -Force -Path $workdir, $destination | Out-Null
-  $archive = Join-Path $workdir "$name.zip"
-  Invoke-WebRequest -UseBasicParsing -Uri "$base/v$version/$name.zip" -OutFile $archive
-  Expand-Archive -LiteralPath $archive -DestinationPath $workdir -Force
-  Copy-Item -Path (Join-Path $workdir "$name\\*") -Destination $destination -Recurse -Force
-  Write-Host "Installiert: $(Join-Path $destination 'medley.exe')"
+  New-Item -ItemType Directory -Force -Path $workdir | Out-Null
+  $installer = Join-Path $workdir $name
+  Invoke-WebRequest -UseBasicParsing -Uri "$base/v$version/$name" -OutFile $installer
+  $hash = (Get-FileHash -Algorithm SHA256 $installer).Hash.ToLower()
+  $expected = (Invoke-WebRequest -UseBasicParsing "$base/v$version/$name.sha256").Content.Split(' ')[0]
+  if ($hash -ne $expected) { throw 'Prüfsumme stimmt nicht.' }
+  Start-Process -FilePath $installer -ArgumentList '/S' -Wait
+  Write-Host "Installiert: $(Join-Path $env:LOCALAPPDATA 'Programs\\Medley\\medley.exe')"
 } finally {
   if (Test-Path -LiteralPath $workdir) { Remove-Item -LiteralPath $workdir -Recurse -Force }
 }
 # Medley starten:
-& (Join-Path $destination 'medley.exe')`,
+& (Join-Path $env:LOCALAPPDATA 'Programs\\Medley\\medley.exe')`,
     notes: [
-      'Später per Doppelklick auf medley.exe im Installationsordner starten.',
-      'Der Befehl entpackt das ZIP und kopiert den Inhalt des Versionsordners an den endgültigen Ort.',
-      'Das Release ist ein portables Programm, kein MSI-Installer. Für das ZIP gibt es derzeit keine separate Release-Prüfsumme.',
+      'Der Installer trägt Medley ins Startmenü ein und lässt sich über „Apps & Features“ wieder entfernen. Eigene Einstellungen bleiben dabei erhalten.',
+      'Der Befehl vergleicht die SHA-256-Prüfsumme der Setup.exe, bevor er sie startet.',
+      'Der Installer legt die nötige Microsoft-Visual-C++-Laufzeit direkt neben dem Programm ab.',
+      'Ohne Installer: die portable Medley.exe oder das ZIP verwenden; dort muss die Visual-C++-Laufzeit im System vorhanden sein.',
     ],
   },
   {
@@ -117,6 +142,9 @@ try {
     architecture: 'Linux · macOS · Windows',
     requirements: 'Git, Rust ≥ 1.88 und Cargo. Linux: C-Toolchain, pkg-config, ALSA- und Grafikbibliotheken. macOS: Xcode Command Line Tools. Windows: MSVC C++ Build Tools mit Windows SDK.',
     downloadUrl: `${REPOSITORY}/archive/refs/tags/v${RELEASE_VERSION}.tar.gz`,
+    formats: [
+      { label: 'Quellcode · tar.gz', note: `Der Stand von v${RELEASE_VERSION}`, url: `${REPOSITORY}/archive/refs/tags/v${RELEASE_VERSION}.tar.gz` },
+    ],
     shell: 'Bash / Zsh',
     installPath: '~/.local/bin/medley (Linux/macOS); %LOCALAPPDATA%\\Programs\\Medley\\medley.exe (Windows)',
     command: `(
