@@ -149,6 +149,10 @@ fn spotify_setup(ui: &mut Ui, state: &mut AppState) {
         ),
     );
     ui.hyperlink_to("Create your Spotify app", "https://developer.spotify.com/dashboard");
+    widgets::caption(
+        ui,
+        "Your Client ID is used for search and library access. Playback asks for a separate browser approval on first play.",
+    );
     widgets::hairline(ui);
     row(ui, "Quality", |ui| {
         let mut bitrate: u16 = match s.bitrate {
@@ -166,7 +170,7 @@ fn spotify_setup(ui: &mut Ui, state: &mut AppState) {
         let (text, color) = match &state.spotify_playback {
             SpotifyPlayback::Unknown => ("Starts with your first Spotify song".to_owned(), pal.secondary),
             SpotifyPlayback::Connecting => ("Connecting…".to_owned(), pal.secondary),
-            SpotifyPlayback::Ready => ("Ready".to_owned(), pal.success),
+            SpotifyPlayback::Ready => ("Playback authorized".to_owned(), pal.success),
             SpotifyPlayback::Failed(_) => ("Unavailable".to_owned(), pal.danger),
         };
         ui.label(RichText::new(text).color(color));
@@ -175,6 +179,11 @@ fn spotify_setup(ui: &mut Ui, state: &mut AppState) {
         ui.add(egui::Label::new(RichText::new(msg).font(theme::regular(11.5)).color(pal.danger)).wrap());
     }
     widgets::caption(ui, "Playback needs Spotify Premium.");
+    widgets::caption(
+        ui,
+        "Spotify refuses audio delivery for some accounts even with Premium. If tracks fail repeatedly, open them in the official Spotify app.",
+    );
+    ui.hyperlink_to("Known Spotify playback issue", "https://github.com/librespot-org/librespot/issues/1649");
 }
 
 fn soundcloud_setup(ui: &mut Ui, state: &mut AppState) {

@@ -140,6 +140,14 @@ bash packaging/linux/appimage.sh
 
 The AppImage and its SHA-256 checksum appear in `dist/`. Packaging also needs the X11 keyboard libraries (`libxkbcommon-x11-0` on Debian/Ubuntu); the script bundles them because they are loaded dynamically. The script downloads checksum-verified packaging tools into `target/appimage/`. Official AppImages are built on Ubuntu 22.04 and require glibc 2.35 or newer plus a working Linux desktop. The tag-triggered release workflow builds, tests and publishes the AppImage automatically.
 
+## Product website
+
+The product page lives in [website/](website/README.md). It includes interactive mix previews, original screenshots and copyable installation commands for each platform. See [website/INSTALL.md](website/INSTALL.md) for desktop installation paths and commands.
+
+    cd website
+    npm ci
+    npm run dev -- --host 127.0.0.1 --port 4173
+
 ## Connecting your services
 
 All sign-ins happen in your normal browser and redirect back to a tiny server Medley runs on `127.0.0.1` for the duration of the login. It listens on loopback only, checks the request's `state` nonce, and shuts down after the first valid answer or five minutes. The ports can be changed in `settings.json`.
@@ -151,6 +159,10 @@ All sign-ins happen in your normal browser and redirect back to a tiny server Me
 | Apple Music | sign-in page at `http://127.0.0.1:8900/apple` | 8900 |
 
 **Spotify.** Open **Accounts** and choose **Connect**. Medley uses librespot's client ID by default, so there's nothing to register. If you'd rather use your own app, create one at [developer.spotify.com](https://developer.spotify.com/dashboard), add the redirect URI above, and paste its client ID into Accounts. Playback needs Premium; browsing and playlists don't. Streaming quality is 96, 160 or 320 kbps (320 by default).
+
+When you first play a Spotify track, Medley opens a separate browser approval for audio playback. Your developer Client ID continues to handle search and library requests; librespot uses its own playback identity. Playback credentials are cached separately under `~/.cache/medley/librespot/playback/` on Linux. This prevents the `login5 BAD_REQUEST` error caused by reusing a developer app's token for audio. Disconnecting Spotify also removes the cached playback credentials.
+
+**Spotify playback compatibility:** Spotify refuses audio keys for some accounts, including Premium accounts. This produces `audio key error 0 1` after authentication has succeeded. The librespot maintainers report no compatible fix currently available in [issue #1649](https://github.com/librespot-org/librespot/issues/1649). Search and library access can still work. Use the official Spotify app for playback if your account is affected; Medley does not bypass Spotify's audio authorization.
 
 If connecting returns **429**, Spotify has limited the app's Web API access. With the built-in Client ID, that limit is shared with other users of the same ID. Set your own app's Client ID in Accounts and reconnect to obtain tokens for that app. Respect any reported wait time. `QUOTA_EXCEEDED` means the development app's quota is exhausted; reconnecting does not reset it. Development apps require their owner to have Premium and additional users to be allowlisted in the Spotify dashboard.
 

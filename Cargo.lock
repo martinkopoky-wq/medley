@@ -2691,7 +2691,7 @@ dependencies = [
 
 [[package]]
 name = "medley"
-version = "0.1.3"
+version = "0.1.4"
 dependencies = [
  "anyhow",
  "chrono",
@@ -2716,7 +2716,7 @@ dependencies = [
 
 [[package]]
 name = "medley-ai"
-version = "0.1.3"
+version = "0.1.4"
 dependencies = [
  "anyhow",
  "futures",
@@ -2730,23 +2730,26 @@ dependencies = [
 
 [[package]]
 name = "medley-audio"
-version = "0.1.3"
+version = "0.1.4"
 dependencies = [
  "anyhow",
  "futures",
  "librespot-core",
  "librespot-playback",
  "medley-core",
+ "open",
  "reqwest",
  "rodio",
+ "serde",
  "tokio",
  "tracing",
+ "tracing-subscriber",
  "url",
 ]
 
 [[package]]
 name = "medley-core"
-version = "0.1.3"
+version = "0.1.4"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2765,7 +2768,7 @@ dependencies = [
 
 [[package]]
 name = "medley-providers"
-version = "0.1.3"
+version = "0.1.4"
 dependencies = [
  "anyhow",
  "async-trait",

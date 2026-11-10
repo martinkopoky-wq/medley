@@ -17,8 +17,10 @@ appdir="$work/Medley.AppDir"
 tools="$repo/target/appimage/tools"
 
 # winit loads these through dlopen; ldd cannot discover them for linuxdeploy.
+# Use the host's base libxkbcommon with its own Compose data. Bundling the older
+# build-host copy breaks newer Compose keysyms such as dead_hamza.
 libraries=()
-for name in libxkbcommon.so.0 libxkbcommon-x11.so.0 libxcb-xkb.so.1; do
+for name in libxkbcommon-x11.so.0 libxcb-xkb.so.1; do
     library=$(ldconfig -p | awk -v name="$name" '$1 == name && /x86-64/ && !found { print $NF; found=1 }')
     if [[ ! -f "$library" ]]; then
         echo "Missing $name: install libxkbcommon-x11-0 (Debian/Ubuntu) before packaging." >&2
@@ -57,6 +59,7 @@ mkdir "$work/linuxdeploy" "$work/appimagetool"
     --appdir "$appdir" \
     --executable "$binary" \
     "${libraries[@]}" \
+    --exclude-library 'libxkbcommon.so*' \
     --desktop-file "$repo/packaging/linux/app.medley.Medley.desktop" \
     --icon-file "$repo/assets/icon-256.png" --icon-filename app.medley.Medley
 

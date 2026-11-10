@@ -902,7 +902,7 @@ impl AppState {
         if self.failures_in_a_row < 3 && self.player.advance(true).is_some() {
             self.start_current();
         } else {
-            self.status = Status::Idle;
+            self.stop();
         }
     }
 
