@@ -19,7 +19,11 @@ if (!(Test-Path "$payload/vcruntime140.dll")) { throw 'vcruntime140.dll missing'
 $deletes = "$repo/target/installers/delete-runtime.nsh"
 Get-ChildItem "$payload/*.dll" | ForEach-Object { 'Delete "$INSTDIR\' + $_.Name + '"' } | Set-Content $deletes
 $nsis = "${env:ProgramFiles(x86)}/NSIS/makensis.exe"
-if (!(Test-Path $nsis)) { throw 'Install NSIS before packaging' }
+if (!(Test-Path $nsis)) {
+  # Runner images vary; fall back to a makensis on PATH (choco install nsis).
+  $found = Get-Command makensis.exe -ErrorAction SilentlyContinue
+  if ($found) { $nsis = $found.Source } else { throw 'Install NSIS before packaging' }
+}
 & $nsis "/DVERSION=$Version" "/DPAYLOAD=$payload" "/DDELETE_RUNTIME=$deletes" "/DOUTPUT=$repo/dist/Medley-$Version-x64-Setup.exe" "$PSScriptRoot/installer.nsi"
 if ($LASTEXITCODE -ne 0) { throw 'NSIS failed' }
 # Standalone binary is useful where the VC++ runtime is already installed.

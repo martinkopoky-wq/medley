@@ -82,6 +82,9 @@ jobs:
           unzip -q "dist/medley-v${version}-x86_64-pc-windows-msvc.zip" -d target/installers/windows-zip
           test -f "target/installers/windows-zip/medley-v${version}-x86_64-pc-windows-msvc/medley.exe"
 
+      - name: Install NSIS
+        run: choco upgrade nsis --no-progress -y
+
       - name: Build Setup.exe and portable exe
         shell: pwsh
         run: |
@@ -103,7 +106,7 @@ jobs:
 
   macos-app:
     name: macOS .dmg
-    runs-on: macos-14
+    runs-on: macos-latest
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:

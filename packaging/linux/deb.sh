@@ -8,6 +8,7 @@ version=${2#v}
 mkdir -p "$repo/target/installers" "$repo/dist"
 work=$(mktemp -d "$repo/target/installers/deb.XXXXXX")
 trap 'rm -rf "$work"' EXIT
+chmod +x "$image"  # downloads from gh release download lose the executable bit
 (cd "$work" && "$image" --appimage-extract > /dev/null)
 payload="$work/squashfs-root/usr"
 root="$work/package"
