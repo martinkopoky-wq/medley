@@ -2,7 +2,7 @@
 
 A German product page for the native Medley desktop app. The visual direction takes its cues from record sleeves: warm paper, dark type, vermilion, a vinyl illustration, and original app screenshots. Mix previews, screenshot tabs, installation tabs, clipboard controls and mobile navigation work in the browser. The preview does not stream music.
 
-The site is built with React and Vinext. Fonts and product screenshots are served locally. There is no analytics integration or third-party font request.
+The site is built with React and Vinext. Fonts and product screenshots are served locally as optimized WebP and subset WOFF2; regenerate them from the tracked sources with `python3 scripts/build-assets.py` (needs fonttools, brotli and Pillow). There is no analytics integration or third-party font request.
 
 ## Run the website locally
 
