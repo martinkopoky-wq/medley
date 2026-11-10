@@ -16,8 +16,12 @@ $crt = Get-ChildItem "$vs/VC/Redist/MSVC/*/x64/Microsoft.VC*.CRT" -Directory |
 if (!$crt) { throw 'Visual C++ redistributable CRT directory missing' }
 Copy-Item "$($crt.FullName)/*.dll" $payload -Force
 if (!(Test-Path "$payload/vcruntime140.dll")) { throw 'vcruntime140.dll missing' }
-$deletes = "$repo/target/installers/delete-runtime.nsh"
-Get-ChildItem "$payload/*.dll" | ForEach-Object { 'Delete "$INSTDIR\' + $_.Name + '"' } | Set-Content $deletes
+# installer.nsi !includes this file unconditionally, so it must exist even if
+# the payload holds no DLLs; Set-Content over an empty pipeline would skip it.
+$deletes = (Join-Path (Split-Path -Parent $payload) 'delete-runtime.nsh').Replace('/', '\')
+$dllDeletes = @(Get-ChildItem -Path $payload -Filter '*.dll' | ForEach-Object { 'Delete "$INSTDIR\' + $_.Name + '"' })
+Set-Content -LiteralPath $deletes -Value $dllDeletes -Encoding ascii
+if (!(Test-Path -LiteralPath $deletes)) { throw "Could not write $deletes" }
 $nsis = "${env:ProgramFiles(x86)}/NSIS/makensis.exe"
 if (!(Test-Path $nsis)) {
   # Runner images vary; fall back to a makensis on PATH (choco install nsis).
