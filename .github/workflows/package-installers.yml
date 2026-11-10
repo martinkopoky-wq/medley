@@ -91,8 +91,9 @@ jobs:
           $version = "${env:RELEASE_TAG}".TrimStart('v')
           $binary = "target/installers/windows-zip/medley-v${version}-x86_64-pc-windows-msvc/medley.exe"
           ./packaging/windows/package.ps1 -Binary $binary -Version $version
-          test -Path "dist/Medley-$version-x64-Setup.exe"
-          test -Path "dist/Medley-$version-x64.exe"
+          foreach ($artifact in @("dist/Medley-$version-x64-Setup.exe", "dist/Medley-$version-x64.exe")) {
+            if (!(Test-Path $artifact)) { throw "$artifact missing" }
+          }
 
       - name: Checksum and upload
         shell: pwsh
