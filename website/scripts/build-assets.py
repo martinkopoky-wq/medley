@@ -45,3 +45,11 @@ for name in ("dark", "light", "dj-booth", "ai-studio"):
     narrow = image.resize((640, round(640 * image.height / image.width)), Image.LANCZOS)
     narrow.save(SHOTS / f"{name}-640.webp", "WEBP", quality=85, method=6)
     print(f"writes {name}.webp and {name}-640.webp")
+
+SCENE = ROOT / "public/scene"
+SCENE.mkdir(exist_ok=True)
+scene = Image.open(ROOT / "assets-src/scene/sleeve-vinyl.png").convert("RGB")
+scene.save(SCENE / "sleeve-vinyl.webp", "WEBP", quality=80, method=6)
+scene_half = scene.resize((768, round(768 * scene.height / scene.width)), Image.LANCZOS)
+scene_half.save(SCENE / "sleeve-vinyl-768.webp", "WEBP", quality=82, method=6)
+print("writes scene/sleeve-vinyl.webp and scene/sleeve-vinyl-768.webp")
