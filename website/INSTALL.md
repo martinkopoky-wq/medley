@@ -2,9 +2,9 @@
 
 Medley ist ein natives Desktop-Programm. Die Produktwebsite zeigt Funktionen und Downloads; sie spielt selbst keine Musik ab. Die Desktop-Version benötigt weder Node.js noch einen Webserver.
 
-Die folgenden Download-Befehle sind auf **v0.1.4** festgelegt. Sie funktionieren, sobald dieses Release inklusive aller Dateien auf GitHub veröffentlicht ist. Eine Änderung von RELEASE_VERSION in website/lib/install-data.ts aktualisiert die Download-Links und Befehle der Website zentral; dieses Dokument muss bei Versionswechseln ebenfalls aktualisiert werden.
+Die folgenden Download-Befehle sind auf **v0.1.5** festgelegt. Sie funktionieren, sobald dieses Release inklusive aller Dateien auf GitHub veröffentlicht ist. Eine Änderung von RELEASE_VERSION in website/lib/install-data.ts aktualisiert die Download-Links und Befehle der Website zentral; dieses Dokument muss bei Versionswechseln ebenfalls aktualisiert werden.
 
-Repository: [Medley](https://github.com/martinkopoky-wq/medley). Releases: [v0.1.4](https://github.com/martinkopoky-wq/medley/releases/tag/v0.1.4).
+Repository: [Medley](https://github.com/martinkopoky-wq/medley). Releases: [v0.1.5](https://github.com/martinkopoky-wq/medley/releases/tag/v0.1.5).
 
 ## Desktop installieren
 
@@ -16,14 +16,14 @@ Linux-Desktop mit glibc ≥ 2.35 (z. B. Ubuntu 22.04+), curl und sha256sum. FUSE
 
 Installationspfad: `~/.local/bin/medley`.
 
-[Direkter Download](https://github.com/martinkopoky-wq/medley/releases/download/v0.1.4/Medley-0.1.4-x86_64.AppImage)
+[Direkter Download](https://github.com/martinkopoky-wq/medley/releases/download/v0.1.5/Medley-0.1.5-x86_64.AppImage)
 
 **Bash / Zsh**
 
 ```sh
 (
   set -eu
-  version='0.1.4'
+  version='0.1.5'
   base='https://github.com/martinkopoky-wq/medley/releases/download'
   file="Medley-$version-x86_64.AppImage"
   workdir="$(mktemp -d)"
@@ -53,14 +53,14 @@ Mac mit Apple Silicon, curl und tar. Für Intel-Macs bitte aus dem Quellcode bau
 
 Installationspfad: `~/Applications/Medley/medley`.
 
-[Direkter Download](https://github.com/martinkopoky-wq/medley/releases/download/v0.1.4/medley-v0.1.4-aarch64-apple-darwin.tar.gz)
+[Direkter Download](https://github.com/martinkopoky-wq/medley/releases/download/v0.1.5/medley-v0.1.5-aarch64-apple-darwin.tar.gz)
 
 **Bash / Zsh**
 
 ```sh
 (
   set -eu
-  version='0.1.4'
+  version='0.1.5'
   base='https://github.com/martinkopoky-wq/medley/releases/download'
   file="medley-v$version-aarch64-apple-darwin.tar.gz"
   workdir="$(mktemp -d)"
@@ -84,13 +84,13 @@ Windows x64 mit PowerShell 5.1 oder neuer. Installation im eigenen Benutzerkonto
 
 Installationspfad: `%LOCALAPPDATA%\Programs\Medley\medley.exe`.
 
-[Direkter Download](https://github.com/martinkopoky-wq/medley/releases/download/v0.1.4/medley-v0.1.4-x86_64-pc-windows-msvc.zip)
+[Direkter Download](https://github.com/martinkopoky-wq/medley/releases/download/v0.1.5/medley-v0.1.5-x86_64-pc-windows-msvc.zip)
 
 **PowerShell**
 
 ```powershell
 $ErrorActionPreference = 'Stop'
-$version = '0.1.4'
+$version = '0.1.5'
 $base = 'https://github.com/martinkopoky-wq/medley/releases/download'
 $name = "medley-v$version-x86_64-pc-windows-msvc"
 $workdir = Join-Path ([System.IO.Path]::GetTempPath()) ([guid]::NewGuid().ToString())
@@ -119,7 +119,7 @@ Git, Rust ≥ 1.88 und Cargo. Linux: C-Toolchain, pkg-config, ALSA- und Grafikbi
 
 Installationspfad: `~/.local/bin/medley (Linux/macOS); %LOCALAPPDATA%\Programs\Medley\medley.exe (Windows)`.
 
-[Direkter Download](https://github.com/martinkopoky-wq/medley/archive/refs/tags/v0.1.4.tar.gz)
+[Direkter Download](https://github.com/martinkopoky-wq/medley/archive/refs/tags/v0.1.5.tar.gz)
 
 Für einen Quellcode-Build zuerst genau die Voraussetzungen deines Systems installieren:
 
@@ -155,7 +155,7 @@ Windows benötigt Git, Rust ≥ 1.88 mit MSVC-Toolchain und Visual Studio C++ Bu
 ```sh
 (
   set -eu
-  version='0.1.4'
+  version='0.1.5'
   mkdir -p "$HOME/src"
   git clone --branch "v$version" --depth 1 'https://github.com/martinkopoky-wq/medley.git' "$HOME/src/medley-v$version"
   cd "$HOME/src/medley-v$version"
@@ -171,7 +171,7 @@ Windows benötigt Git, Rust ≥ 1.88 mit MSVC-Toolchain und Visual Studio C++ Bu
 
 ```powershell
 $ErrorActionPreference = 'Stop'
-$version = '0.1.4'
+$version = '0.1.5'
 $source = Join-Path $HOME "src\medley-v$version"
 New-Item -ItemType Directory -Force -Path (Split-Path $source -Parent) | Out-Null
 git clone --branch "v$version" --depth 1 'https://github.com/martinkopoky-wq/medley.git' $source
@@ -190,7 +190,7 @@ try {
 ```
 
 - Zuerst die Voraussetzungen für dein System installieren. Rust muss bereits installiert sein; rustup update stable aktualisiert eine vorhandene rustup-Installation.
-- Der Quellcode liegt anschließend in ~/src/medley-v0.1.4, das gebaute Programm zusätzlich in target/release/medley (Windows: medley.exe).
+- Der Quellcode liegt anschließend in ~/src/medley-v0.1.5, das gebaute Programm zusätzlich in target/release/medley (Windows: medley.exe).
 - Die Befehle bauen das konkrete Release mit Cargo.lock und eingeschalteter Spotify-Wiedergabe. Ein bereits vorhandener Quellcode-Zielordner wird nicht überschrieben.
 
 ## Wo speichert Medley Einstellungen und Musikdaten?

@@ -1,5 +1,5 @@
 /** Release names follow .github/workflows/release.yml and packaging/linux/appimage.sh. */
-export const RELEASE_VERSION = '0.1.4';
+export const RELEASE_VERSION = '0.1.5';
 export const REPOSITORY = 'https://github.com/martinkopoky-wq/medley';
 export const RELEASE_URL = `${REPOSITORY}/releases/tag/v${RELEASE_VERSION}`;
 const downloadBase = `${REPOSITORY}/releases/download/v${RELEASE_VERSION}`;

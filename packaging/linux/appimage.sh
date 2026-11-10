@@ -16,11 +16,12 @@ work=$(mktemp -d "$repo/target/appimage/build.XXXXXX")
 appdir="$work/Medley.AppDir"
 tools="$repo/target/appimage/tools"
 
-# winit loads these through dlopen; ldd cannot discover them for linuxdeploy.
-# Use the host's base libxkbcommon with its own Compose data. Bundling the older
-# build-host copy breaks newer Compose keysyms such as dead_hamza.
-libraries=()
-for name in libxkbcommon-x11.so.0 libxcb-xkb.so.1; do
+# Core and X11 share private symbols: never mix different XKB builds. A modern
+# matched pair also understands newer Compose data (including dead_hamza).
+bash "$repo/packaging/linux/build-xkb.sh"
+xkb_prefix="$repo/target/appimage/xkbcommon-1.11.0/prefix"
+libraries=(--library "$xkb_prefix/lib/libxkbcommon.so.0" --library "$xkb_prefix/lib/libxkbcommon-x11.so.0")
+for name in libxcb-xkb.so.1; do
     library=$(ldconfig -p | awk -v name="$name" '$1 == name && /x86-64/ && !found { print $NF; found=1 }')
     if [[ ! -f "$library" ]]; then
         echo "Missing $name: install libxkbcommon-x11-0 (Debian/Ubuntu) before packaging." >&2
@@ -55,17 +56,17 @@ download runtime-x86_64 \
 mkdir "$work/linuxdeploy" "$work/appimagetool"
 (cd "$work/linuxdeploy" && "$tools/linuxdeploy-x86_64.AppImage" --appimage-extract > /dev/null)
 (cd "$work/appimagetool" && "$tools/appimagetool-x86_64.AppImage" --appimage-extract > /dev/null)
-"$work/linuxdeploy/squashfs-root/AppRun" \
+LD_LIBRARY_PATH="$xkb_prefix/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" "$work/linuxdeploy/squashfs-root/AppRun" \
     --appdir "$appdir" \
     --executable "$binary" \
     "${libraries[@]}" \
-    --exclude-library 'libxkbcommon.so*' \
     --desktop-file "$repo/packaging/linux/app.medley.Medley.desktop" \
     --icon-file "$repo/assets/icon-256.png" --icon-filename app.medley.Medley
 
 install -Dm644 "$repo/LICENSE-MIT" "$appdir/usr/share/licenses/medley/LICENSE-MIT"
 install -Dm644 "$repo/LICENSE-APACHE" "$appdir/usr/share/licenses/medley/LICENSE-APACHE"
 install -Dm644 "$repo/assets/fonts/Inter-LICENSE.txt" "$appdir/usr/share/licenses/medley/Inter-LICENSE.txt"
+install -Dm644 "$repo/target/appimage/xkbcommon-1.11.0/source/LICENSE" "$appdir/usr/share/licenses/medley/libxkbcommon-LICENSE"
 
 output="$repo/dist/Medley-$version-x86_64.AppImage"
 ARCH=x86_64 VERSION="$version" "$work/appimagetool/squashfs-root/AppRun" \

@@ -2691,7 +2691,7 @@ dependencies = [
 
 [[package]]
 name = "medley"
-version = "0.1.4"
+version = "0.1.5"
 dependencies = [
  "anyhow",
  "chrono",
@@ -2716,7 +2716,7 @@ dependencies = [
 
 [[package]]
 name = "medley-ai"
-version = "0.1.4"
+version = "0.1.5"
 dependencies = [
  "anyhow",
  "futures",
@@ -2730,7 +2730,7 @@ dependencies = [
 
 [[package]]
 name = "medley-audio"
-version = "0.1.4"
+version = "0.1.5"
 dependencies = [
  "anyhow",
  "futures",
@@ -2749,7 +2749,7 @@ dependencies = [
 
 [[package]]
 name = "medley-core"
-version = "0.1.4"
+version = "0.1.5"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2768,7 +2768,7 @@ dependencies = [
 
 [[package]]
 name = "medley-providers"
-version = "0.1.4"
+version = "0.1.5"
 dependencies = [
  "anyhow",
  "async-trait",

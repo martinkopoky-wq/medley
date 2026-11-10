@@ -138,7 +138,7 @@ cargo build --release --locked
 bash packaging/linux/appimage.sh
 ```
 
-The AppImage and its SHA-256 checksum appear in `dist/`. Packaging also needs the X11 keyboard libraries (`libxkbcommon-x11-0` on Debian/Ubuntu); the script bundles them because they are loaded dynamically. The script downloads checksum-verified packaging tools into `target/appimage/`. Official AppImages are built on Ubuntu 22.04 and require glibc 2.35 or newer plus a working Linux desktop. The tag-triggered release workflow builds, tests and publishes the AppImage automatically.
+The AppImage and its SHA-256 checksum appear in `dist/`. Packaging needs Meson, Ninja, Bison and xcb-xkb development headers (`sudo apt install meson ninja-build bison libxcb-xkb-dev` on Debian/Ubuntu). The script builds and bundles a matched libxkbcommon 1.11.0 core/X11 pair from a checksum-pinned source archive, because the libraries share private symbols and must not be mixed across versions. The script downloads checksum-verified packaging tools into `target/appimage/`. Official AppImages are built on Ubuntu 22.04 and require glibc 2.35 or newer plus a working Linux desktop. The tag-triggered release workflow builds, tests and publishes the AppImage automatically.
 
 ## Product website
 

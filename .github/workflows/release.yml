@@ -45,7 +45,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
             pkg-config libasound2-dev libwayland-dev libxkbcommon-dev libgl1-mesa-dev \
-            libxkbcommon-x11-0 desktop-file-utils xvfb xauth
+            libxkbcommon-x11-0 libxcb-xkb-dev meson ninja-build bison desktop-file-utils xvfb xauth
 
       - name: Build
         run: cargo build --release --locked -p medley --target ${{ matrix.target }}
